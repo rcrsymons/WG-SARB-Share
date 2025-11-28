@@ -2,111 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-store" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Geoscience Gallery (Protected)</title>
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background-color: #111;
-      color: #eee;
-      text-align: center;
-      margin: 0;
-      padding: 2rem;
-    }
+    :root { --bg:#111; --fg:#eee; --accent:#3a8; --muted:#aaa; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--fg); margin:0; }
+    .wrap { padding: 2rem; }
     .lockscreen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 80vh;
+      min-height: 88vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center;
     }
+    .logo { width: 180px; height: auto; opacity: .95; }
+    .panel { background:#1b1b1b; padding:1.25rem; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.45); }
+    h2 { margin: .25rem 0 .5rem 0; font-weight: 500; }
     input {
-      padding: 0.5rem;
-      margin: 0.5rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: none;
+      width: 240px; padding:.6rem .8rem; border-radius:10px; border:1px solid #333; background:#0e0e0e; color:var(--fg); outline:none;
     }
     button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 8px;
-      background: #3a8;
-      color: white;
-      cursor: pointer;
+      padding:.6rem 1rem; border:none; border-radius:10px; background:var(--accent); color:white; cursor:pointer;
     }
-    .gallery {
-      display: none;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
-      justify-items: center;
-    }
+    .hint { color:var(--muted); font-size:.9rem; margin-top:.25rem; }
+    .error { color:#f66; min-height:1.1rem; }
+    .gallery { display:none; padding: 2rem; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1rem; justify-items:center; }
     img, video {
-      width: 100%;
-      max-width: 480px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      transition: transform 0.2s;
+      width:100%; max-width:520px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.5); transition:transform .2s;
     }
-    img:hover, video:hover { transform: scale(1.03); }
+    img:hover, video:hover { transform: scale(1.02); }
+    @media (max-width:600px){ .wrap{padding:1rem} input{width: 220px;} }
   </style>
 </head>
 <body>
 
-  <div class="lockscreen" id="lockscreen">
-    <h2>Enter Access Code</h2>
-    <input type="password" id="passcode" placeholder="Enter code">
-    <button onclick="checkCode()">Unlock</button>
-    <p id="error" style="color:red;"></p>
-  </div>
+  <div class="wrap">
+    <div class="lockscreen" id="lockscreen">
+      <!-- your logo here -->
+      <img src="Geo_Colour_WhiteText.png" alt="Wits Geosciences" class="logo" onerror="this.style.display='none'">
+      <div class="panel">
+        <h2>Enter access code</h2>
+        <input type="password" id="passcode" placeholder="Passcode" autocomplete="off" inputmode="text">
+        <div style="margin-top:.6rem">
+          <button id="unlock">Unlock</button>
+        </div>
+        <div id="error" class="error"></div>
+        <div class="hint">Tip: codes ignore spaces and case.</div>
+      </div>
+    </div>
 
-  <div class="gallery" id="gallery">
-    <h1>Geoscience Sample Gallery</h1>
-
-    <img src="BM18940.png" alt="BM18940">
-    <img src="BM18940(May2024).png" alt="BM18940 May 2024">
-    <img src="BM18941.png" alt="BM18941">
-    <img src="BM18941(May2024).png" alt="BM18941 May 2024">
-    <img src="BM18948_GFSA9.png" alt="BM18948 GFSA9">
-    <img src="BM18954_GFSA15.png" alt="BM18954 GFSA15">
-    <img src="BM18954_GFSA15(2).png" alt="BM18954 GFSA15 (2)">
-    <img src="BM18982_BF76.png" alt="BM18982 BF76">
-    <img src="BM18983_BF80.png" alt="BM18983 BF80">
-    <img src="BM18984_BF81.png" alt="BM18984 BF81">
-    <img src="Nigel Reef Assorted.png" alt="Nigel Reef Assorted">
-    <img src="Polished Conglomerate (Visible Gold) Zoom.png" alt="Polished Conglomerate Visible Gold Zoom">
-    <img src="Polished Conglomerate (Visible Gold).png" alt="Polished Conglomerate Visible Gold">
-    <video src="Polished Congomerates.mov" controls muted></video>
-    <img src="Unlabelled1.png" alt="Unlabelled 1">
-    <img src="Unlabelled2.png" alt="Unlabelled 2">
-    <img src="Unlabelled3.png" alt="Unlabelled 3">
-    <img src="Unlabelled4.png" alt="Unlabelled 4">
-    <img src="Unlabelled5.png" alt="Unlabelled 5">
-    <img src="Unlabelled6.png" alt="Unlabelled 6">
-    <img src="WG-V-2.png" alt="WG-V-2">
-    <img src="WG-V-3.png" alt="WG-V-3">
-    <img src="WG-V-3(Hight res).png" alt="WG-V-3 High Res">
-    <img src="WG-V-19.png" alt="WG-V-19">
-    <img src="WG-V-29.png" alt="WG-V-29">
-    <img src="WG-V-30.png" alt="WG-V-30">
-    <img src="WG-V-35.png" alt="WG-V-35">
-    <img src="WG-V-39.png" alt="WG-V-39">
-    <img src="WG-V-43.png" alt="WG-V-43">
+    <div class="gallery" id="gallery">
+      <h1>Geoscience Sample Gallery</h1>
+      <div class="grid">
+        <!-- your files -->
+        <img src="BM18940.png" alt="BM18940">
+        <img src="BM18940(May2024).png" alt="BM18940 May 2024">
+        <img src="BM18941.png" alt="BM18941">
+        <img src="BM18941(May2024).png" alt="BM18941 May 2024">
+        <img src="BM18948_GFSA9.png" alt="BM18948 GFSA9">
+        <img src="BM18954_GFSA15.png" alt="BM18954 GFSA15">
+        <img src="BM18954_GFSA15(2).png" alt="BM18954 GFSA15 (2)">
+        <img src="BM18982_BF76.png" alt="BM18982 BF76">
+        <img src="BM18983_BF80.png" alt="BM18983 BF80">
+        <img src="BM18984_BF81.png" alt="BM18984 BF81">
+        <img src="Nigel Reef Assorted.png" alt="Nigel Reef Assorted">
+        <img src="Polished Conglomerate (Visible Gold) Zoom.png" alt="Polished Conglomerate Visible Gold Zoom">
+        <img src="Polished Conglomerate (Visible Gold).png" alt="Polished Conglomerate Visible Gold">
+        <video src="Polished Congomerates.mov" controls muted playsinline></video>
+        <img src="Unlabelled1.png" alt="Unlabelled 1">
+        <img src="Unlabelled2.png" alt="Unlabelled 2">
+        <img src="Unlabelled3.png" alt="Unlabelled 3">
+        <img src="Unlabelled4.png" alt="Unlabelled 4">
+        <img src="Unlabelled5.png" alt="Unlabelled 5">
+        <img src="Unlabelled6.png" alt="Unlabelled 6">
+        <img src="WG-V-2.png" alt="WG-V-2">
+        <img src="WG-V-3.png" alt="WG-V-3">
+        <img src="WG-V-3(Hight res).png" alt="WG-V-3 High res">
+        <img src="WG-V-19.png" alt="WG-V-19">
+        <img src="WG-V-29.png" alt="WG-V-29">
+        <img src="WG-V-30.png" alt="WG-V-30">
+        <img src="WG-V-35.png" alt="WG-V-35">
+        <img src="WG-V-39.png" alt="WG-V-39">
+        <img src="WG-V-43.png" alt="WG-V-43">
+      </div>
+    </div>
   </div>
 
   <script>
-    const CORRECT_CODE = "SARB2026"; // ← change this
-    function checkCode() {
+    // set your access code here
+    const ACCESS_CODE = "rocks123";
+
+    function norm(s){ return (s || "").toString().replace(/\s+/g,"").toLowerCase(); }
+
+    function unlock(){
       const input = document.getElementById("passcode").value;
-      if (input === CORRECT_CODE) {
+      const ok = norm(input) === norm(ACCESS_CODE);
+      const err = document.getElementById("error");
+      if(ok){
         document.getElementById("lockscreen").style.display = "none";
-        document.getElementById("gallery").style.display = "grid";
+        const g = document.getElementById("gallery");
+        g.style.display = "block";
+        setTimeout(()=>{ g.querySelector(".grid").style.display="grid"; }, 0);
+        err.textContent = "";
+        window.scrollTo(0,0);
       } else {
-        document.getElementById("error").textContent = "Incorrect code.";
+        err.textContent = "Incorrect code.";
       }
     }
-  </script>
 
+    document.getElementById("unlock").addEventListener("click", unlock);
+    document.getElementById("passcode").addEventListener("keydown", e=>{
+      if(e.key === "Enter"){ unlock(); }
+    });
+  </script>
 </body>
 </html>
-
