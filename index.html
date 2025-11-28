@@ -2,51 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Cache-Control" content="no-store" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Geoscience Gallery (Protected)</title>
   <style>
     :root { --bg:#111; --fg:#eee; --accent:#3a8; --muted:#aaa; }
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--fg); margin:0; }
-    .wrap { padding: 2rem; }
-    .lockscreen {
-      min-height: 88vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center;
-    }
-    .logo { width: 180px; height: auto; opacity: .95; }
-    .panel { background:#1b1b1b; padding:1.25rem; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.45); }
-    h2 { margin: .25rem 0 .5rem 0; font-weight: 500; }
-    input {
-      width: 240px; padding:.6rem .8rem; border-radius:10px; border:1px solid #333; background:#0e0e0e; color:var(--fg); outline:none;
-    }
-    button {
-      padding:.6rem 1rem; border:none; border-radius:10px; background:var(--accent); color:white; cursor:pointer;
-    }
-    .hint { color:var(--muted); font-size:.9rem; margin-top:.25rem; }
-    .error { color:#f66; min-height:1.1rem; }
-    .gallery { display:none; padding: 2rem; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1rem; justify-items:center; }
-    img, video {
-      width:100%; max-width:520px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.5); transition:transform .2s;
-    }
-    img:hover, video:hover { transform: scale(1.02); }
-    @media (max-width:600px){ .wrap{padding:1rem} input{width: 220px;} }
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg);margin:0}
+    .wrap{padding:2rem}
+    .lockscreen{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center}
+    .logo{width:180px;height:auto;opacity:.95}
+    .panel{background:#1b1b1b;padding:1.25rem;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.45);max-width:360px;width:100%}
+    h2{margin:.25rem 0 .5rem 0;font-weight:500}
+    input{width:100%;padding:.6rem .8rem;border-radius:10px;border:1px solid #333;background:#0e0e0e;color:var(--fg);outline:none}
+    button{padding:.6rem 1rem;border:none;border-radius:10px;background:var(--accent);color:white;cursor:pointer;margin-top:.5rem;width:100%}
+    .hint{color:var(--muted);font-size:.9rem;margin-top:.25rem}
+    .error{color:#f66;min-height:1.1rem}
+    .debug{display:none;text-align:left;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:.85rem;background:#0b0b0b;border:1px solid #333;border-radius:10px;padding:.75rem;margin-top:.75rem;white-space:pre-wrap;word-break:break-word}
+
+    /* Hidden by default; revealed when body has .unlocked */
+    #gallery{display:none;padding:2rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;justify-items:center}
+    img,video{width:100%;max-width:520px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.5);transition:transform .2s}
+    img:hover,video:hover{transform:scale(1.02)}
+    body.unlocked #lockscreen{display:none}
+    body.unlocked #gallery{display:block}
+
+    @media (max-width:600px){.wrap{padding:1rem}}
   </style>
 </head>
 <body>
-
   <div class="wrap">
     <div class="lockscreen" id="lockscreen">
-      <!-- your logo here -->
       <img src="Geo_Colour_WhiteText.png" alt="Wits Geosciences" class="logo" onerror="this.style.display='none'">
       <div class="panel">
         <h2>Enter access code</h2>
-        <input type="password" id="passcode" placeholder="Passcode" autocomplete="off" inputmode="text">
-        <div style="margin-top:.6rem">
-          <button id="unlock">Unlock</button>
-        </div>
+        <input type="password" id="passcode" placeholder="Passcode" autocomplete="off" inputmode="text" aria-label="Access code">
+        <button id="unlock" type="button">Unlock</button>
         <div id="error" class="error"></div>
-        <div class="hint">Tip: codes ignore spaces and case.</div>
+        <div class="hint">Tip: spaces/case don’t matter. Press Enter to submit.</div>
+        <div id="debug" class="debug" aria-live="polite"></div>
       </div>
     </div>
 
@@ -88,31 +83,61 @@
   </div>
 
   <script>
-    // set your access code here
-    const ACCESS_CODE = "sarb2026";
+    // ====== SET YOUR PASSCODE HERE ======
+    const ACCESS_CODE = "rocks123";
+    // ====================================
 
-    function norm(s){ return (s || "").toString().replace(/\s+/g,"").toLowerCase(); }
+    // Normalise: strip spaces, case, and invisible zero-width characters
+    const ZW = /[\u200B-\u200D\u2060\uFEFF]/g;
+    const norm = s => (s||"").toString().replace(ZW,"").replace(/\s+/g,"").toLowerCase();
 
-    function unlock(){
-      const input = document.getElementById("passcode").value;
-      const ok = norm(input) === norm(ACCESS_CODE);
-      const err = document.getElementById("error");
-      if(ok){
-        document.getElementById("lockscreen").style.display = "none";
-        const g = document.getElementById("gallery");
-        g.style.display = "block";
-        setTimeout(()=>{ g.querySelector(".grid").style.display="grid"; }, 0);
-        err.textContent = "";
-        window.scrollTo(0,0);
-      } else {
-        err.textContent = "Incorrect code.";
+    const $ = sel => document.querySelector(sel);
+    const passInput = $("#passcode");
+    const errorBox = $("#error");
+    const debugBox = $("#debug");
+
+    function setUnlocked() {
+      document.body.classList.add("unlocked");
+      window.scrollTo(0,0);
+    }
+
+    function showDebug(info) {
+      const u = new URL(window.location.href);
+      if (u.searchParams.get("debug") === "1") {
+        debugBox.style.display = "block";
+        debugBox.textContent = info;
       }
     }
 
-    document.getElementById("unlock").addEventListener("click", unlock);
-    document.getElementById("passcode").addEventListener("keydown", e=>{
-      if(e.key === "Enter"){ unlock(); }
-    });
+    function unlock(raw) {
+      const input = raw ?? passInput.value;
+      const a = norm(input);
+      const b = norm(ACCESS_CODE);
+      const ok = a === b;
+
+      showDebug(`typed(raw): ${JSON.stringify(input)}
+norm(typed): ${a}
+norm(code) : ${b}
+match?     : ${ok}`);
+
+      if (ok) {
+        errorBox.textContent = "";
+        setUnlocked();
+      } else {
+        errorBox.textContent = "Incorrect code.";
+      }
+    }
+
+    // Button + Enter
+    $("#unlock").addEventListener("click", () => unlock());
+    passInput.addEventListener("keydown", e => { if (e.key === "Enter") unlock(); });
+
+    // Auto-unlock via URL: ?code=YOURCODE
+    (function autoUnlockFromURL(){
+      const u = new URL(window.location.href);
+      const c = u.searchParams.get("code");
+      if (c) unlock(c);
+    })();
   </script>
 </body>
 </html>
