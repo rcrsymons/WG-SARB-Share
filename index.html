@@ -6,6 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Geoscience Gallery (Protected)</title>
   <style>
+    /* Prevent context-menu, drag, or selection on images */
+.gallery img {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+body {
+  -webkit-touch-callout: none; /* block iOS long-press save */
+}
     :root { --bg:#111; --fg:#eee; --accent:#3a8; --muted:#aaa; }
     *{box-sizing:border-box}
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg);margin:0}
@@ -32,6 +42,10 @@
   </style>
 </head>
 <body>
+  <script>
+// disable right-click context menu anywhere on the page
+document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
   <div class="wrap">
     <div class="lockscreen" id="lockscreen">
       <img src="Geo_Colour_WhiteText.png" alt="Wits Geosciences" class="logo" onerror="this.style.display='none'">
